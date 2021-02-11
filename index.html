@@ -1,0 +1,299 @@
+<html>
+	<head>
+
+	<style>
+		body{
+			background-color:gray;
+			margin:0px;
+			padding:0px;
+		}
+		canvas{
+			position:absolute;
+			
+			border-radius:15px;
+		}
+		#title{
+			position:absolute;
+			top:5px;
+			left:300px;
+			right:300px;
+			border-radius: 15px;
+			background-color:white;
+			border-color: black;
+			color:black;
+			text-align: center;
+			font-size:12pt;
+			font-family: verdana;
+			text-shadow:5px 5px #afafaf;
+		}
+		#controls{
+			position:fixed;
+			left:300px;
+			right:300px;
+			bottom:0px;
+			background-color:white;
+			border-radius: 5px;
+			padding:5px;
+			border:3px yellow solid;
+			text-align:center;
+		}
+		.money{
+			font-size: 20pt;
+			color:green;
+		}
+	</style>
+
+	<script type="text/javascript" src="./jquery-1.11.1.js"></script>
+	<script type="text/javascript" src="./machine.js"></script>
+	<script type="text/javascript" src="./canvas.js"></script>
+	<script type="text/javascript" src="./renderhelper.js"></script>
+	<script type="text/javascript" src="./graphics.js"></script>
+	<script>
+		var width = 500;
+		var height = 300;
+		var initialCoins = 1000;
+
+		var shapes = [
+			new Shape([
+				[1,0,0,0,6],
+				[2,0,0,0,7],
+				[3,0,0,0,8],
+				[4,0,0,0,9],
+				[5,0,0,0,10]
+			]),
+			new Shape([
+				[5,4,3,2,1],
+				[0,0,0,0,0],
+				[0,0,0,0,0],
+				[0,0,0,0,0],
+				[0,0,0,0,0]
+			]),
+			new Shape([
+				[1,2,3,4,5],
+				[0,0,0,0,0],
+				[0,0,0,0,0],
+				[0,0,0,0,0],
+				[0,0,0,0,0]
+			]),
+			new Shape([
+				[0,0,0,0,0],
+				[1,2,3,4,5],
+				[0,0,0,0,0],
+				[0,0,0,0,0],
+				[0,0,0,0,0]
+			]),
+			new Shape([
+				[0,0,0,0,0],
+				[0,0,0,0,0],
+				[1,2,3,4,5],
+				[0,0,0,0,0],
+				[0,0,0,0,0]
+			]),
+			new Shape([
+				[0,0,0,0,0],
+				[0,0,0,0,0],
+				[0,0,0,0,0],
+				[1,2,3,4,5],
+				[0,0,0,0,0]
+			]),
+			new Shape([
+				[0,0,0,0,0],
+				[0,0,0,0,0],
+				[0,0,0,0,0],
+				[0,0,0,0,0],
+				[1,2,3,4,5]
+			]),
+			new Shape([
+				[1,0,0,0,5],
+				[0,2,0,4,0],
+				[0,0,3,0,0],
+				[0,0,0,0,0],
+				[0,0,0,0,0]
+			]),
+			new Shape([
+				[0,0,0,0,0],
+				[0,0,0,0,0],
+				[0,0,3,0,0],
+				[0,2,0,4,0],
+				[1,0,0,0,5]
+			]),
+			new Shape([
+				[1,0,0,0,0],
+				[0,2,0,0,0],
+				[0,3,0,0,0],
+				[0,4,0,0,0],
+				[0,5,0,0,0]
+			]),
+			new Shape([
+				[1,0,0,0,0],
+				[0,2,3,0,0],
+				[0,0,4,0,0],
+				[0,0,5,0,0],
+				[0,0,0,0,0]
+			]),
+			new Shape([
+				[1,0,0,0,0],
+				[2,3,0,0,0],
+				[0,4,5,0,0],
+				[0,0,6,7,0],
+				[0,0,0,8,9]
+			])
+		];
+
+		var machineconfig = {
+			reelmap:new ReelMap({
+				'default':new ReelSet([
+					'wwbbacwebgwhacwehbwwwbbacwebgwhacwehbwwbbacwebgwhacwehbwwbbacwebgwhacwehb',
+					'wwbbacwebgwhacwehbwwwbbacwebgwhacwehbwwbbacwebgwhacwehbwwbbacwebgwhacwehb',
+					'acewbbacwebgwhacwehbgwcbahewgbcahwegbchwaegbwchagwebchhwcaebh',
+					'acewbbacwebgwhacwehbgwcbahewgbcahwegbchwaegbwchagwebchhwcaebh',
+					'acewbbacwebgwhacwehbgwcbahewgbcahwegbchwaegbwchagwebchhwcaebh'
+				])
+			}),
+			lines:[
+				{shape:shapes[0], matcher:new LengthMatcher(['w','s'])},
+				{shape:shapes[1], matcher:new LengthMatcher(['w','s'])},
+				{shape:shapes[2], matcher:new LengthMatcher(['w','s'])},
+				{shape:shapes[3], matcher:new LengthMatcher(['w','s'])},
+				{shape:shapes[4], matcher:new LengthMatcher(['w','s'])},
+				{shape:shapes[5], matcher:new LengthMatcher(['w','s'])},
+				{shape:shapes[6], matcher:new LengthMatcher(['w','s'])},
+				{shape:shapes[7], matcher:new LengthMatcher(['w','s'])},
+				{shape:shapes[8], matcher:new LengthMatcher(['w','s'])},
+				{shape:shapes[9], matcher:new LengthMatcher(['w','s'])},
+				{shape:shapes[10], matcher:new LengthMatcher(['w','s'])}
+			],
+			prizes:new PrizeTable({
+				'a3':10,'a4':30,'a5':50,'a6':60,'a7':70,'a8':80,'a9':90,'a10':100,
+				'b3':100,'b4':300,'b5':500,
+				'c3':1000,'c4':3000,'c5':5000,
+				'd3':1000,'c4':3000,'c5':5000,
+				'e3':1000,'e4':3000,'e5':5000,
+				'f3':1000,'f4':3000,'f5':5000,
+				'g3':1000,'g4':3000,'g5':5000,
+				'h3':1000,'h4':3000,'h5':5000
+			}),
+			bets:[1,5,10,15,20,50,100],
+			rows:5,
+			cols:5
+		};
+
+		slotMachine = new Machine(machineconfig);
+
+		function adjustCanvas(){
+			var wWidth = $(document).width();
+			var wHeight = $(document).height();
+			
+			left = (wWidth-width)/2;
+			_top = (wHeight-height)/2;
+
+			$("#canvas").css("top",_top+"px");
+			$("#canvas").css("left",left+"px");
+		}
+
+		$(function(){
+			/*$("#canvas").attr('width',width);
+			$("#canvas").attr('height',height);
+
+			$(window).resize(function(){adjustCanvas()});
+
+			adjustCanvas();*/
+
+			// Cargamos los datos
+			for(var i=1;i<=machineconfig.lines.length;i++){
+				$("#lines").append("<option value='"+i+"'>"+i+"</option>");
+			}
+			for(var i=0;i<machineconfig.bets.length;i++){
+				$("#bets").append("<option value='"+machineconfig.bets[i]+"'>"+machineconfig.bets[i]+"</option>");
+			}
+
+			$("#money").text(initialCoins);
+
+			/*
+			Preparamos recursos e iniciamos
+			*/
+			gfxLoadResources(function(){
+				var canvas = new Canvas($('#canvas').get(0));
+
+				var numcols = machineconfig.cols;
+
+				gfxMachine = new GfxMachine({
+					reelWidth:canvas.width/numcols,reelHeight:canvas.height,
+					rows:machineconfig.rows,
+					cols:numcols,
+					maxSpeed:55,
+					symbolList:['a','b','c','d','e','f','g'],
+					prizelines:[
+						shapes[0],
+						shapes[1],
+						shapes[2],
+						shapes[3],
+						shapes[4],
+						shapes[5],
+						shapes[6],
+						shapes[7],
+						shapes[8],
+						shapes[9],
+						shapes[10]
+					]
+				});
+
+				gfxMachine.setCoins(initialCoins);
+				
+				(function __draw(){
+					//machine.render();
+					gfxMachine.render(canvas);
+					requestAnimationFrame(__draw);
+				})();
+			});
+
+		});
+
+		function spin(){
+			var bet = parseInt($("#bets").val());
+			var lines = parseInt($("#lines").val());
+
+			var money = parseInt($("#money").text());
+			money-=bet*lines
+			$("#money").text(money);
+
+			var spin = slotMachine.play(bet,lines);
+			
+			gfxMachine.start();
+			gfxMachine.addCoins(-bet*lines);
+			setTimeout(function(){
+				//spin.prizes = [{line:1,length:3}];
+				/*spin.matrix = [
+					['a','c','b','b','a'],
+					['a','a','c','d','a'],
+					['a','b','w','h','a'],
+					['a','a','w','h','a'],
+					['a','a','w','h','a']
+				];
+				spin.prizes = slotMachine.getPrizes(bet,lines,spin.matrix);*/
+				console.log(spin);
+				gfxMachine.stop(spin);
+			},1500);
+		}
+
+	</script>
+	</head>
+	<body>
+		<div id="title"><h1>Tragaperros</h1></div>
+		<div style="position:fixed;top:100px;bottom:100px;left:300px;right:300px;">
+			<canvas id="canvas" style="width:100%;height:100%;"></canvas>
+		</div>
+		<div id="controls">
+			<p>Apuesta
+				<select id="bets">
+				</select>
+				Lineas
+				<select id="lines">
+				</select>
+				<input type="button" name="spin" value="Spin!" onclick="spin();" />
+				Monedas:<span class="money" id="money">1000</span>
+			</p>
+
+		</div>
+	</body>
+</html>
